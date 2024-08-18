@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  login     String
+  isAdmin   Boolean  @default(false) // Indica se o usuário é admin
+  
+  memories  Memory[]
+  products  Product[] // Relacionamento com a tabela Product
+}
+
+model Memory {
+  id         String   @id @default(uuid())
+  userId     String
+  coverUrl   String
+  content    String
+  isPublic   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id])
+  productId  String  // Campo opcional para conectar a um produto
+  product    Product? @relation(fields: [productId], references: [productId])
+}
+
+model Product {
+  productId           String   @id @default(uuid())
+  nameProduct         String
+  descriptionProduct  String
+  registerNewProduct  DateTime @default(now()) // Data de registro
+  userId              String
+  user                User     @relation(fields: [userId], references: [id])
+  memories            Memory[] // Relacionamento com a tabela Memory
+}

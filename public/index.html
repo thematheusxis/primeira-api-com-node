@@ -1,0 +1,122 @@
+<!-- <!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Product Management</title>
+</head>
+<body>
+  <div class="container">
+    <h1>Product Management</h1>
+    
+    <div class="notification" id="notification"></div>
+    
+    <section>
+      <h2>List Products</h2>
+      <div id="products"></div>
+    </section>
+    
+    <section>
+      <h2>Add / Update Product</h2>
+      <form id="productForm">
+        <input type="hidden" id="productId" name="id">
+        <label for="nameProduct">Product Name:</label>
+        <input type="text" id="nameProduct" name="nameProduct" required>
+        
+        <label for="descriptionProduct">Description:</label>
+        <textarea id="descriptionProduct" name="descriptionProduct" required></textarea>
+        
+        <label for="registerNewProduct">Registration Date:</label>
+        <input type="date" id="registerNewProduct" name="registerNewProduct" required>
+        
+        <button type="submit">Save Product</button>
+      </form>
+    </section>
+  </div>
+
+  <script>
+    async function fetchProducts() {
+      try {
+        const response = await fetch('/products');
+        const products = await response.json();
+        const productsContainer = document.getElementById('products');
+
+        productsContainer.innerHTML = '';
+        products.forEach(product => {
+          const productElement = document.createElement('div');
+          productElement.className = 'product';
+          productElement.innerHTML = `
+            <h3>${product.nameProduct}</h3>
+            <p>Description: ${product.descriptionProduct}</p>
+            <p>Registered on: ${new Date(product.registerNewProduct).toLocaleDateString()}</p>
+            <button onclick="editProduct(${product.id})">Edit</button>
+            <button onclick="deleteProduct(${product.id})">Delete</button>
+          `;
+          productsContainer.appendChild(productElement);
+        });
+      } catch (error) {
+        showNotification('Error fetching products: ' + error.message, 'error');
+      }
+    }
+
+    document.getElementById('productForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = event.target;
+      const productData = new FormData(form);
+      const id = productData.get('id');
+
+      try {
+        const response = id ? await fetch(`/products/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify(Object.fromEntries(productData)),
+          headers: { 'Content-Type': 'application/json' }
+        }) : await fetch('/products', {
+          method: 'POST',
+          body: JSON.stringify(Object.fromEntries(productData)),
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!response.ok) throw new Error('Failed to save product');
+        showNotification('Product saved successfully!', 'success');
+        fetchProducts();
+        form.reset();
+      } catch (error) {
+        showNotification('Error saving product: ' + error.message, 'error');
+      }
+    });
+
+    async function deleteProduct(id) {
+      try {
+        const response = await fetch(`/products/${id}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('Failed to delete product');
+        showNotification('Product deleted successfully!', 'success');
+        fetchProducts();
+      } catch (error) {
+        showNotification('Error deleting product: ' + error.message, 'error');
+      }
+    }
+
+    function editProduct(id) {
+      fetch(`/products/${id}`)
+        .then(response => response.json())
+        .then(product => {
+          document.getElementById('productId').value = product.id;
+          document.getElementById('nameProduct').value = product.nameProduct;
+          document.getElementById('descriptionProduct').value = product.descriptionProduct;
+          document.getElementById('registerNewProduct').value = new Date(product.registerNewProduct).toISOString().split('T')[0];
+        })
+        .catch(error => showNotification('Error fetching product details: ' + error.message, 'error'));
+    }
+
+    function showNotification(message, type) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = 'notification ' + type;
+      setTimeout(() => notification.className = 'notification', 5000);
+    }
+
+    fetchProducts();
+  </script>
+</body>
+</html> -->
